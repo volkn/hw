@@ -14,6 +14,9 @@ def forse_is_with_you(a):
     if a == 0:
         return 1
     
+    elif a < 0:
+        return 'please insert a possitive number'
+
     else:
         return 2 * forse_is_with_you(a - 1)
 

@@ -21,7 +21,9 @@ def exponansial(b, e):
     elif e == 0:
         return 1
 
-    else: 
+    elif e < 0:
+        return 'please insert a possitive number'
+    else:
         return b * exponansial(b, e - 1)
 
 
