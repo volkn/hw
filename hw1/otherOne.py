@@ -4,7 +4,9 @@ y = "i'm sorry for my english"
 
 z = 'Now please inseret the number: '
 
-print(x, y, sep="\n")
+k = "NOTE: this prog can only work when given number is an integer"
+
+print(x, y, k, sep="\n")
 
 
 def forse_is_with_you(a):
@@ -23,5 +25,5 @@ try:
     thing = int(a)
     print(forse_is_with_you(thing))
 except:
-    print('please insert a number')
+    print('please insert an integer')
 
