@@ -26,7 +26,11 @@ class App(QWidget):
         self.left = 10
         self.width = 400
         self.height = 330
-       
+ 
+        self.figsrc, self.axsrc = plt.subplots()
+        self.figzoom, self.axzoom = plt.subplots()
+
+      
        # self.x = np.array([])
        # self.x = np.array([])
         self.window()
@@ -94,10 +98,8 @@ class App(QWidget):
         time_list = []
         price_list = []
  
-        figsrc = plt.subplots()
-        axsrc = plt.subplots()
-        figzoom = plt.subplots()
-        axzoom = plt.subplots()
+        #self.figsrc, self.axsrc = plt.subplots()
+        #self.figzoom, self.axzoom = plt.subplots()
 
         for i in range(len(data)):
             if "TimeStamp" in data[i]:
@@ -107,27 +109,28 @@ class App(QWidget):
         time_list.reverse()
         price_list.reverse()
         
-        a = np.array(time_list)
+        a = np.linspace(0, 100.0, num=len(time_list))
         b = np.array(price_list)
-
-        aslan, deneme = np.random.rand(4, 200)
-        axsrc.scatter(aslan, deneme)
-        axsrc.ylabel("PRICE")
-        axsrc.xlabel("TIME")
-        axsrc.yscale('linear')
-        axsrc.xscale('linear')
+        
+        self.axsrc.plot(a, b)
+        
+        plt.ylabel("PRICE")
+        plt.xlabel("TIME")
+       
+       #plt.yscale('linear')
+        plt.xscale('linear')
         
 
-        figsrc.canvas.mpl_connect('button_press_event', onpress)
+        self.figsrc.canvas.mpl_connect('button_press_event', self.onpress)
         plt.show()
             
-        def onpress(event):
-            if event.button != 1:
-                return
-            x, y = event.xdata, event.ydata
-            axzoom.set_xlim(x - 0.1, x + 0,1)
-            axzoom.set_ylim(y - 0.1, y + 0.1)
-            figzoom.canvas.draw()
+    def onpress(event):
+        if event.button != 1:
+            return
+        x, y = event.xdata, event.ydata
+        self.axzoom.set_xlim(x - 0.1, x + 0,1)
+        self.xzoom.set_ylim(y - 0.1, y + 0.1)
+        self.figzoom.canvas.draw()
     
 
 if __name__ == '__main__':
