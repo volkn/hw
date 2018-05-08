@@ -26,10 +26,10 @@ class App(QWidget):
         self.left = 10
         self.width = 400
         self.height = 330
- 
-        self.figsrc, self.axsrc = plt.subplots()
-        self.figzoom, self.axzoom = plt.subplots()
-
+# 
+#        self.figsrc, self.axsrc = plt.subplots()
+#        self.figzoom, self.axzoom = plt.subplots()
+#
       
        # self.x = np.array([])
        # self.x = np.array([])
@@ -97,35 +97,48 @@ class App(QWidget):
         data = requests.get(url).json()["result"]
         time_list = []
         price_list = []
+
+        figsrc, axsrc = plt.subplots()
+        figzoom, axzoom = plt.subplots()
  
         for i in range(len(data)):
             if "TimeStamp" in data[i]:
                 time_list.append(data[i]["TimeStamp"][11:19])
                 price_list.append(data[i]["Price"])
         time_list.reverse()
-        price_list.reverse()
+        price_list.reverse()       
+ 
         a = np.linspace(0, 100.0, num=len(time_list))
         b = np.array(price_list)
         
-        self.axsrc.plot(a, b)
+        def onpress(event):
+            if event.button != 1:
+                return
+            x, y = event.xdata, event.ydata
+            axzoom.set_xlim(x - 10, x + 10)
+            axzoom.set_ylim(y-((price_list[0]+price_list[-1])/1000), y+((price_list[0]+price_list[-1])/1000))
+            figzoom.canvas.draw()
+       
+        axsrc.plot(a, b)
+        axzoom.plot(a,b)
         #self.cc.plot(a,b)
         plt.ylabel("PRICE")
         plt.xlabel("TIME")
        
-        plt.yscale('linear')
+       # plt.yscale('linear')
         plt.xscale('linear')
         
 
-        self.figsrc.canvas.mpl_connect('button_press_event', self.onpress)
+        figsrc.canvas.mpl_connect('button_press_event', onpress)
         plt.show()
             
-    def onpress(event, self):
-        if event.button != 1:
-            return
-        x, y = event.xdata, event.ydata
-        self.axzoom.set_xlim(x - 0.1, x + 0,1)
-        self.axzoom.set_ylim(y - 0.1, y + 0.1)
-        self.figzoom.canvas.draw()
+    #def onpress(event, self):
+    #    if event.button != 1:
+    #        return
+    #    x, y = event.xdata, event.ydata
+    #    self.axzoom.set_xlim(x - 0.1, x + 0,1)
+    #    self.axzoom.set_ylim(y - 0.1, y + 0.1)
+    #    self.figzoom.canvas.draw()
     
 
 if __name__ == '__main__':
