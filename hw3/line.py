@@ -98,38 +98,33 @@ class App(QWidget):
         time_list = []
         price_list = []
  
-        #self.figsrc, self.axsrc = plt.subplots()
-        #self.figzoom, self.axzoom = plt.subplots()
-
         for i in range(len(data)):
             if "TimeStamp" in data[i]:
                 time_list.append(data[i]["TimeStamp"][11:19])
                 price_list.append(data[i]["Price"])
-      
         time_list.reverse()
         price_list.reverse()
-        
         a = np.linspace(0, 100.0, num=len(time_list))
         b = np.array(price_list)
         
         self.axsrc.plot(a, b)
-        
+        #self.cc.plot(a,b)
         plt.ylabel("PRICE")
         plt.xlabel("TIME")
        
-       #plt.yscale('linear')
+        plt.yscale('linear')
         plt.xscale('linear')
         
 
         self.figsrc.canvas.mpl_connect('button_press_event', self.onpress)
         plt.show()
             
-    def onpress(event):
+    def onpress(event, self):
         if event.button != 1:
             return
         x, y = event.xdata, event.ydata
         self.axzoom.set_xlim(x - 0.1, x + 0,1)
-        self.xzoom.set_ylim(y - 0.1, y + 0.1)
+        self.axzoom.set_ylim(y - 0.1, y + 0.1)
         self.figzoom.canvas.draw()
     
 
