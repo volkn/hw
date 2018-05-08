@@ -3,18 +3,13 @@ import time
 import threading
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtGui import QPixmap
-#from PyQt5.QtWidgets import QApplication, QWidget, QInputDialog, QLineEdit, QLabel, QPushButton
 from PyQt5.QtWidgets import *
 import requests
 import matplotlib
 
-#from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-#from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
-
 matplotlib.use("Qt5Agg")
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-
 import numpy as np
 
 class App(QWidget):
@@ -26,17 +21,11 @@ class App(QWidget):
         self.left = 10
         self.width = 400
         self.height = 330
-# 
-#        self.figsrc, self.axsrc = plt.subplots()
-#        self.figzoom, self.axzoom = plt.subplots()
-#
-      
-       # self.x = np.array([])
-       # self.x = np.array([])
+
         self.window()
 
     def window(self):
-        
+
         self.setGeometry(self.left, self.top, self.width, self.height)
 
         self.plot_button = QPushButton("PLOT",self)
@@ -100,17 +89,17 @@ class App(QWidget):
 
         figsrc, axsrc = plt.subplots()
         figzoom, axzoom = plt.subplots()
- 
+
         for i in range(len(data)):
             if "TimeStamp" in data[i]:
                 time_list.append(data[i]["TimeStamp"][11:19])
                 price_list.append(data[i]["Price"])
         time_list.reverse()
-        price_list.reverse()       
- 
+        price_list.reverse()
+
         a = np.linspace(0, 100.0, num=len(time_list))
         b = np.array(price_list)
-        
+
         def onpress(event):
             if event.button != 1:
                 return
@@ -118,30 +107,18 @@ class App(QWidget):
             axzoom.set_xlim(x - 10, x + 10)
             axzoom.set_ylim(y-((price_list[0]+price_list[-1])/1000), y+((price_list[0]+price_list[-1])/1000))
             figzoom.canvas.draw()
-       
+
         axsrc.plot(a, b)
         axzoom.plot(a,b)
-        #self.cc.plot(a,b)
         plt.ylabel("PRICE")
         plt.xlabel("TIME")
-       
-       # plt.yscale('linear')
+
         plt.xscale('linear')
-        
 
         figsrc.canvas.mpl_connect('button_press_event', onpress)
         plt.show()
-            
-    #def onpress(event, self):
-    #    if event.button != 1:
-    #        return
-    #    x, y = event.xdata, event.ydata
-    #    self.axzoom.set_xlim(x - 0.1, x + 0,1)
-    #    self.axzoom.set_ylim(y - 0.1, y + 0.1)
-    #    self.figzoom.canvas.draw()
-    
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = App()
-    sys.exit(app.exec_())                           
+    sys.exit(app.exec_())
