@@ -6,11 +6,13 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import *
 import requests
 import matplotlib
-
+import matplotlib.animation as animation
 matplotlib.use("Qt5Agg")
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
+import matplotlib.dates as mdates
+import threading
 
 BTC = "BTC"
 ETH = "ETH"
@@ -66,12 +68,12 @@ class App(QWidget):
             for i in range(len(some['result'])):
                 if some['result'][i]["MarketName"][:3] == self.thing.text():
                     self.listing.addItem(some["result"][i]["MarketName"][4:])
-        elif self.thing.text()== ETH:
+        elif self.thing.text()== "ETH":
             self.listing.clear()
             for i in range(len(some['result'])):
                 if some['result'][i]["MarketName"][:3] == self.thing.text():
                     self.listing.addItem(some["result"][i]["MarketName"][4:])
-        elif self.thing.text == USDT:
+        elif self.thing.text() == "USDT":
             self.listing.clear()
             for i in range(len(some['result'])):
                 if some['result'][i]["MarketName"][:4] == self.thing.text():
@@ -117,36 +119,90 @@ class App(QWidget):
 
     def ploting2(self):
         self.thing3 = self.listing.currentItem()
-        url = "https://bittrex.com/api/v1.1/public/getmarkethistory?market={}-{}".format(self.thing.text(),self.thing3.text())
-        data = requests.get(url).json()["result"]
-        time_list = []
-        price_list = []
-        #figsrc, axsrc = plt.subplots()
-        #figzoom, axzoom = plt.subplots()
-
-        for i in range(len(data)):
-            if "TimeStamp" in data[i]:
-                time_list.append(data[i]["TimeStamp"][11:19])
-                price_list.append(data[i]["Price"])
-        time_list.reverse()
-        price_list.reverse()
-        a = np.linspace(0, 100.0, num=len(time_list))
-        b = np.array(price_list)
-        
+#        url = "https://bittrex.com/api/v1.1/public/getmarkethistory?market={}-{}".format(self.thing.text(),self.thing3.text())
+#        data = requests.get(url).json()["result"]
+#        time_list = []
+#        price_list = []
+#        
+#        for i in range(len(data)):
+#            if "TimeStamp" in data[i]:
+#                time_list.append(data[i]["TimeStamp"][11:19])
+#                price_list.append(data[i]["Price"])
+#        time_list.reverse()
+#        price_list.reverse()
+#        #a = np.linspace(0, 100.0, num=len(time_list))
+#        #b = np.array(price_list)
+#	
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        ax.plot(a,b)
-        ax.set_title('Click to zoom')
+       	#fig.autofmt_xdate()
+       	#myFmt = mdates.DateFormatter('%H:%M:%S')
+        #ax.xaxis.set_major_formatter(myFmt)       
+        ax.set_title('THIS GRAPH TAKES DATA FROM bittrex.com')
         scale = 1.1
         zp = ZoomPan()
         plt.ylabel("PRICE")
         plt.xlabel("TIME")
-        plt.xscale('linear')
+       # plt.xscale('linear')
         figZoom = zp.zoom_factory(ax, base_scale = scale)
         figPan = zp.pan_factory(ax)
+        plt.xticks(rotation = 20)
+#        def animate():
+#            url = "https://bittrex.com/api/v1.1/public/getmarkethistory?market={}-{}".format(self.thing.text(),self.thing3.text())
+#            data = requests.get(url).json()["result"]
+#            time_list = []
+#            price_list = []
+#            for i in range(len(data)):
+#                if "TimeStamp" in data[i]:
+#                    time_list.append(data[i]["TimeStamp"][11:19])
+#                    price_list.append(data[i]["Price"])
+#            time_list.reverse()
+#            price_list.reverse()
+#           #a = np.linspace(0, 100.0, num=len(time_list))
+#            a = np.array(time_list)
+#            b = np.array(price_list)
+#            print(a)
+#            ax.plot(a,b)
+#        animate()
+        #ani = animation.FuncAnimation(fig, animate, interval = 10)
+#        ax.plot(time_list,price_list)
         plt.show()
-        
-        
+        self.thread = self.wow_factor(self.thing.text(), self.thing3.text())
+        self.thread.start()
+
+
+    def wow_factor(self, v1, v2):
+        self.v1 = v1
+        self.v2 = v2
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+ 
+        while True:
+            url = "https://bittrex.com/api/v1.1/public/getmarkethistory?market={}-{}".format(self.thing.text(),self.thing3.text())
+            data = requests.get(url).json()["result"]
+            time_list = []
+            price_list = []
+            
+            for i in range(len(data)):
+                if "TimeStamp" in data[i]:
+                    time_list.append(data[i]["TimeStamp"][11:19])
+                    price_list.append(data[i]["Price"])
+            time_list.reverse()
+            price_list.reverse()
+           
+            #plt.clf()
+            ax.set_title('THIS GRAPH TAKES DATA FROM bittrex.com')
+            plt.ylabel("PRICE")
+            plt.xlabel("TIME")
+            plt.xticks(rotation = 20)
+            ax.plot(time_list,price_list)
+           # plt.draw()
+            plt.pause(2)
+        time.sleep(0.01)
+
+
+
 class ZoomPan:
     def __init__(self):
         self.press = None
@@ -228,8 +284,6 @@ class ZoomPan:
         #return the function
         return onMotion
     
-
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = App()
