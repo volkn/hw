@@ -27,19 +27,16 @@ class App(QWidget):
         self.width = 400
         self.height = 330
         self.window()
-
+        self.fig = plt.figure()
+        self.ax = self.fig.add_subplot(111)
+ 
     def window(self):
         self.setGeometry(self.left, self.top, self.width, self.height)
         
-        #self.plot_button = QPushButton("PLOT",self)
-        #self.plot_button2 = QPushButton("PLOT WITH ZOOM EVENT",self)
-        
         self.listWidget = QtWidgets.QListWidget()
-        #self.listWidget2 = QtWidgets.QListWidget()
         self.listWidget.addItem(BTC)
         self.listWidget.addItem(ETH)
         self.listWidget.addItem(USDT)
-
         self.listing = QtWidgets.QListWidget()
 
         list_box = QtWidgets.QVBoxLayout()
@@ -48,9 +45,6 @@ class App(QWidget):
         list_box.addStretch()
         list_box.addWidget(self.listing)
         list_box.addStretch()
-        #list_box.addWidget(self.plot_button)
-        #list_box.addStretch()
-        #list_box.addWidget(self.plot_button2)
         self.setLayout(list_box)
         
         self.listWidget.itemClicked.connect(self.list_available_things)
@@ -81,91 +75,16 @@ class App(QWidget):
         else:
             for i in range(100):
                 self.listing.addItem("please insert one of the three 'BTC, ETH, USDT'")
-#
-#    def ploting(self):
-#        self.thing2 = self.listing.currentItem()
-#        url = "https://bittrex.com/api/v1.1/public/getmarkethistory?market={}-{}".format(self.thing.text(),self.thing2.text())
-#        data = requests.get(url).json()["result"]
-#        time_list = []
-#        price_list = []
-#        figsrc, axsrc = plt.subplots()
-#        figzoom, axzoom = plt.subplots()
-#
-#        for i in range(len(data)):
-#            if "TimeStamp" in data[i]:
-#                time_list.append(data[i]["TimeStamp"][11:19])
-#                price_list.append(data[i]["Price"])
-#        time_list.reverse()
-#        price_list.reverse()
-#        a = np.linspace(0, 100.0, num=len(time_list))
-#        b = np.array(price_list)
-#
-#        def onpress(event):
-#            if event.button != 1:
-#                return
-#            x, y = event.xdata, event.ydata
-#            axzoom.set_xlim(x - 10, x + 10)
-#            axzoom.set_ylim(y-((price_list[0]+price_list[-1])/1000), y+((price_list[0]+price_list[-1])/1000))
-#            figzoom.canvas.draw()
-#
-#        axsrc.plot(a, b)
-#        axzoom.plot(a,b)
-#        plt.ylabel("PRICE")
-#        plt.xlabel("TIME")
-#        plt.xscale('linear')
-#        figsrc.canvas.mpl_connect('button_press_event', onpress)
-#        plt.show()
-#
 
     def ploting2(self):
         self.thing3 = self.listing.currentItem()
-#        url = "https://bittrex.com/api/v1.1/public/getmarkethistory?market={}-{}".format(self.thing.text(),self.thing3.text())
-#        data = requests.get(url).json()["result"]
-#        time_list = []
-#        price_list = []
-#        
-#        for i in range(len(data)):
-#            if "TimeStamp" in data[i]:
-#                time_list.append(data[i]["TimeStamp"][11:19])
-#                price_list.append(data[i]["Price"])
-#        time_list.reverse()
-#        price_list.reverse()
-#        #a = np.linspace(0, 100.0, num=len(time_list))
-#        #b = np.array(price_list)
-#	
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-       	#fig.autofmt_xdate()
-       	#myFmt = mdates.DateFormatter('%H:%M:%S')
-        #ax.xaxis.set_major_formatter(myFmt)       
-        ax.set_title('THIS GRAPH TAKES DATA FROM bittrex.com')
         scale = 1.1
         zp = ZoomPan()
         plt.ylabel("PRICE")
         plt.xlabel("TIME")
-       # plt.xscale('linear')
-        figZoom = zp.zoom_factory(ax, base_scale = scale)
-        figPan = zp.pan_factory(ax)
+        figZoom = zp.zoom_factory(self.ax, base_scale = scale)
+        figPan = zp.pan_factory(self.ax)
         plt.xticks(rotation = 20)
-#        def animate():
-#            url = "https://bittrex.com/api/v1.1/public/getmarkethistory?market={}-{}".format(self.thing.text(),self.thing3.text())
-#            data = requests.get(url).json()["result"]
-#            time_list = []
-#            price_list = []
-#            for i in range(len(data)):
-#                if "TimeStamp" in data[i]:
-#                    time_list.append(data[i]["TimeStamp"][11:19])
-#                    price_list.append(data[i]["Price"])
-#            time_list.reverse()
-#            price_list.reverse()
-#           #a = np.linspace(0, 100.0, num=len(time_list))
-#            a = np.array(time_list)
-#            b = np.array(price_list)
-#            print(a)
-#            ax.plot(a,b)
-#        animate()
-        #ani = animation.FuncAnimation(fig, animate, interval = 10)
-#        ax.plot(time_list,price_list)
         plt.show()
         self.thread = self.wow_factor(self.thing.text(), self.thing3.text())
         self.thread.start()
@@ -174,16 +93,12 @@ class App(QWidget):
     def wow_factor(self, v1, v2):
         self.v1 = v1
         self.v2 = v2
-
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
  
         while True:
             url = "https://bittrex.com/api/v1.1/public/getmarkethistory?market={}-{}".format(self.thing.text(),self.thing3.text())
             data = requests.get(url).json()["result"]
             time_list = []
             price_list = []
-            
             for i in range(len(data)):
                 if "TimeStamp" in data[i]:
                     time_list.append(data[i]["TimeStamp"][11:19])
@@ -191,17 +106,13 @@ class App(QWidget):
             time_list.reverse()
             price_list.reverse()
            
-            #plt.clf()
-            ax.set_title('THIS GRAPH TAKES DATA FROM bittrex.com')
+            self.ax.set_title('THIS GRAPH TAKES DATA FROM bittrex.com')
             plt.ylabel("PRICE")
             plt.xlabel("TIME")
             plt.xticks(rotation = 20)
-            ax.plot(time_list,price_list)
-           # plt.draw()
-            plt.pause(2)
+            self.ax.plot(time_list,price_list)
+            plt.pause(0.01)
         time.sleep(0.01)
-
-
 
 class ZoomPan:
     def __init__(self):
